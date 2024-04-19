@@ -1,13 +1,108 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
-  <title>Hello, World!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Number Game</title>
+<style>
+    body {
+        text-align: center;
+        background-color: #ADD8E6; /* Light Blue */
+    }
+</style>
 </head>
 <body>
-  <h1>
-    Hello, World!
-  </h1>
+<h1>Welcome to the Guess the Number Game!</h1>
+<div id="gameOutput">
+    <p>Guess a number between 1 and 20:</p>
+    <input type="number" id="guessNumber" min="1" max="20">
+    <button onclick="checkGuess()">Submit Guess</button>
+    <p id="result"></p>
+    <p id="attemptsRemaining"></p>
+</div>
+
+<button id="playAgainButton" style="display: none;" onclick="playAgain()">Play Again</button>
+<button id="nextLevelButton" style="display: none;" onclick="startQuiz()">Next Level</button>
+<button onclick="window.close()">Exit Game</button>
+
+<script>
+    let numberToGuess = Math.floor(Math.random() * 20) + 1;
+    let attempts = 0;
+    const maxAttempts = 5;
+    let correctGuess = false;
+
+    function checkGuess() {
+        let guess = parseInt(document.getElementById('guessNumber').value);
+        
+        if (isNaN(guess) || guess < 1 || guess > 20) {
+            document.getElementById('result').innerText = "Please enter a valid number between 1 and 20.";
+            return;
+        }
+
+        attempts++;
+        
+        if (guess < numberToGuess) {
+            document.getElementById('result').innerText = "Too low. Try again.";
+        } else if (guess > numberToGuess) {
+            document.getElementById('result').innerText = "Too high. Try again.";
+        } else {
+            document.getElementById('result').innerText = `Congratulations! You guessed the number ${numberToGuess} correctly in ${attempts} attempts.`;
+            disableInputs();
+            correctGuess = true;
+            document.getElementById('nextLevelButton').style.display = "block";
+        }
+        
+        if (attempts === maxAttempts && !correctGuess) {
+            document.getElementById('result').innerText = `Game over! The number I was thinking of was: ${numberToGuess}`;
+            disableInputs();
+            document.getElementById('playAgainButton').style.display = "block";
+        }
+
+        document.getElementById('guessNumber').value = ""; // Reset the guessed number input field
+        updateAttemptsRemaining();
+    }
+
+    function disableInputs() {
+        document.getElementById('guessNumber').disabled = true;
+        document.querySelector('button').disabled = true;
+    }
+
+    function updateAttemptsRemaining() {
+        let remaining = maxAttempts - attempts;
+        document.getElementById('attemptsRemaining').innerText = `Remaining attempts: ${remaining}`;
+    }
+
+    function playAgain() {
+        numberToGuess = Math.floor(Math.random() * 20) + 1;
+        attempts = 0;
+        correctGuess = false;
+        document.getElementById('result').innerText = "";
+        document.getElementById('attemptsRemaining').innerText = "";
+        document.getElementById('guessNumber').disabled = false;
+        document.querySelector('button').disabled = false;
+        document.getElementById('playAgainButton').style.display = "none";
+        document.getElementById('nextLevelButton').style.display = "none";
+    }
+
+    function startQuiz() {
+        document.getElementById('gameOutput').innerHTML = `
+            <h2>Quiz Time!</h2>
+            <p>What is the capital of France?</p>
+            <input type="text" id="quizAnswer">
+            <button onclick="checkQuizAnswer()">Submit Answer</button>
+            <p id="quizResult"></p>
+        `;
+    }
+
+    function checkQuizAnswer() {
+        let answer = document.getElementById('quizAnswer').value.trim().toLowerCase();
+        if (answer === "paris") {
+            document.getElementById('quizResult').innerText = "Correct! Paris is the capital of France.";
+            document.getElementById('nextLevelButton').style.display = "block";
+        } else {
+            document.getElementById('quizResult').innerText = "Incorrect. Try again!";
+        }
+    }
+</script>
 </body>
 </html>
